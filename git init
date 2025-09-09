@@ -1,0 +1,9 @@
+mkdir projet-classeur
+cd mon-projet
+git init
+git config --global user.name "Hugooooooooooooooooooooooo"
+git config --global user.email "jubert.hugo08@gmail.com"
+git add .
+git commit -m "Premier commit"
+git remote add origin URL_DU_REPO
+git push -u origin master
