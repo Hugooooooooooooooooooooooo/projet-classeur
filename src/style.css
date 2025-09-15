@@ -1,0 +1,45 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 40px;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* Titre principal */
+h1 {
+  color: #2c3e50;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #3498db;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* Paragraphe d’introduction */
+p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+/* Liens */
+a {
+  display: inline-block;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  color: #2980b9;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #1abc9c;
+  text-decoration: underline;
+}
+
+/* Responsive: centre le contenu */
+body {
+  max-width: 800px;
+  margin: 40px auto;
+}
