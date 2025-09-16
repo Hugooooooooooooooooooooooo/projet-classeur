@@ -4,6 +4,20 @@
   <meta charset="utf-8">
   <title>Portfolio SIN</title>
   <link rel="stylesheet" href="src/style.css">
+  <style>
+    /* Style basique pour la zone d'affichage */
+    #viewer {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #f80202;
+      margin-top: 20px;
+    }
+    .links-list a {
+      cursor: pointer;
+      color: rgb(5, 5, 240);
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -14,17 +28,60 @@
 
     <main>
       <ul class="links-list">
-        <li><a href="docs/1.pdf" target="_blank" rel="noopener">Voir le TP 1</a></li>
-        <li><a href="img/image.jpg" target="_blank" rel="noopener">Voir l'image</a></li>
-        <li><a href="journal/journal de bord.html" target="_blank" rel="noopener">Voir le journal de bord</a></li>
-        <li><a href="readme/readme.odt" target="_blank" rel="noopener">À lire</a></li>
-        <li><a href="src/style.css" target="_blank" rel="noopener">Mise en page</a></li>
+        <li><a href="docs/1.pdf" data-type="pdf">Voir le TP 1</a></li>
+        <li><a href="img/image.jpg" data-type="image">Voir l'image</a></li>
+        <li><a href="journal/journal de bord.html" data-type="html">Voir le journal de bord</a></li>
+        <li><a href="readme/readme.odt" data-type="file">À lire</a></li>
+        <li><a href="src/style.css" data-type="text">Mise en page</a></li>
       </ul>
+
+      <!-- Zone où on affichera les contenus -->
+      <div id="viewer">
+        <p>Sélectionne un document dans la liste pour l’afficher ici.</p>
+      </div>
     </main>
 
     <footer>
       <p>© 2025 Mon Portfolio SIN</p>
     </footer>
   </div>
+
+  <script>
+    const links = document.querySelectorAll('.links-list a');
+    const viewer = document.getElementById('viewer');
+
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault(); // Empêche la navigation normale
+
+        const url = link.getAttribute('href');
+        const type = link.getAttribute('data-type');
+
+        if(type === 'pdf') {
+          // Affiche le PDF dans un iframe
+          viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
+        } else if(type === 'image') {
+          // Affiche l'image
+          viewer.innerHTML = `<img src="${url}" alt="Image" style="max-width:100%; max-height:600px;">`;
+        } else if(type === 'html') {
+          // Affiche la page HTML dans un iframe
+          viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
+        } else if(type === 'text') {
+          // Affiche le fichier texte (css par ex) via fetch
+          fetch(url)
+            .then(response => response.text())
+            .then(text => {
+              viewer.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
+            })
+            .catch(() => {
+              viewer.innerHTML = `<p>Impossible de charger le fichier.</p>`;
+            });
+        } else {
+          // Pour les autres fichiers (ex: odt), on propose un lien de téléchargement
+          viewer.innerHTML = `<p>Impossible d'afficher ce fichier ici. <a href="${url}" target="_blank" rel="noopener">Clique ici pour télécharger</a></p>`;
+        }
+      });
+    });
+  </script>
 </body>
 </html>
