@@ -1,4 +1,5 @@
-<!doctype html>
+
+</html><!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -14,13 +15,29 @@
       align-items: center;
       justify-content: center;
       overflow: auto;
+      flex-direction: column;
+      background-color: #000022;
+      color: white;
+      padding: 15px;
     }
     .links-list a {
-      cursor: pointer;
-      color: rgb(5, 5, 240);
-      text-decoration: underline;
       display: block;
-      margin-bottom: 5px;
+      background-color: #1c1c3c;
+      color: #1abc9c;
+      text-decoration: none;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+    .links-list a:hover {
+      background-color: #3498db;
+      color: #fff;
+      transform: translateY(-2px);
+      text-decoration: none;
     }
     .category {
       display: none;
@@ -29,6 +46,87 @@
       margin: 10px 5px;
       padding: 5px 10px;
       cursor: pointer;
+    }
+    /* Styles pour journal de bord (admin) */
+    form {
+      background-color: #111133;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+      width: 100%;
+      max-width: 700px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #1c1c3c;
+      color: #fff;
+      resize: vertical;
+    }
+    input[type="file"] {
+      margin-top: 10px;
+      color: #ccc;
+    }
+    button[type="submit"] {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #1abc9c;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button[type="submit"]:hover {
+      background-color: #16a085;
+    }
+    .entry {
+      background-color: #1c1c3c;
+      border-left: 5px solid #3498db;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 255, 255, 0.05);
+      max-width: 700px;
+      width: 100%;
+      position: relative;
+    }
+    .entry p {
+      color: #ccc;
+      margin: 10px 0;
+      white-space: pre-wrap;
+    }
+    .entry small {
+      color: #888;
+      display: block;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    .entry img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-size: 0.9em;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
     }
   </style>
 </head>
@@ -44,13 +142,14 @@
       <div>
         <button class="btn-toggle" onclick="toggleCategory('SIN')">💻🧠SIN🧠💻</button>
         <button class="btn-toggle" onclick="toggleCategory('projet')">🔧🛠️projet🛠️🔧</button>
+        <button class="btn-toggle" onclick="askPasswordAndToggleAdmin()">🔒Admin🔒</button>
       </div>
 
-      <!-- Liens : Catégorie SIN -->
+      <!-- Liens : Catégorie SIN (sans journal de bord) -->
       <ul class="links-list category" id="SIN">
         <li><a href="docs/1.pdf" data-type="pdf">Voir le TP 1</a></li>
-        <li><a href="img/image.jpg" data-type="image">Voir l'image</a></li>
-        <li><a href="journal/journal de bord.html" data-type="html">Voir le journal de bord</a></li>
+        <li><a href="img/image.jpg" data-type="image">Voir image</a></li>
+        <!-- Le lien journal de bord a été retiré de SIN -->
       </ul>
 
       <!-- Liens : Catégorie projet -->
@@ -59,6 +158,17 @@
         <li><a href="readme/readme.odt" data-type="file">À lire</a></li>
         <li><a href="src/style.css" data-type="text">Mise en page</a></li>
       </ul>
+
+      <!-- Catégorie Admin avec journal de bord (formulaire + gestion) -->
+      <div class="category" id="admin">
+        <h2>Journal de bord - Admin</h2>
+        <ul class="links-list">
+          <li><a href="journal/journal de bord.html" data-type="html">Journal de bord</a></li>
+          <!-- Tu peux ajouter d'autres liens admin ici -->
+        </ul>
+        <!-- Ici tu peux mettre le code de gestion du journal si tu veux, 
+             sinon ce lien ouvre la page journal de bord.html -->
+      </div>
 
       <!-- Viewer -->
       <div id="viewer">
@@ -116,10 +226,23 @@
       });
       const selected = document.getElementById(id);
       if (selected) selected.style.display = 'block';
+      viewer.innerHTML = '<p>Sélectionne un document dans la liste pour l’afficher ici.</p>';
+    }
+	
+	
+    // Nouvelle fonction demandant le mot de passe pour Admin
+    function askPasswordAndToggleAdmin() {
+      const password = prompt("Entrez le mot de passe pour accéder à l’Admin :");
+      const correctPassword = "Phoenix.2845";
+      if (password === correctPassword) {
+        toggleCategory('admin');
+      } else {
+        alert("Mot de passe incorrect !");
+      }
     }
 
-    // Optionnel : Afficher une catégorie par défaut (ex: documents)
-    toggleCategory('documents');
+    // Affiche la catégorie SIN par défaut au chargement
+    toggleCategory('SIN');
   </script>
 </body>
 </html>

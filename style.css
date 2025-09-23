@@ -45,3 +45,23 @@ a:hover {
   color: #1abc9c;
   text-decoration: underline;
 }
+
+/* === 🎯 Styles pour le viewer === */
+#viewer {
+  color: white; /* texte blanc */
+  background-color: #2c3e50; /* ✅ fond plus clair, bleu-gris foncé */
+  padding: 20px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  overflow: auto;
+  max-height: 600px;
+}
+
+/* Texte dans <pre> (fichiers .txt, .css, .js, etc.) */
+#viewer pre {
+  color: white;
+  background-color: transparent;
+  font-family: monospace;
+  font-size: 1em;
+  white-space: pre-wrap;
+}
