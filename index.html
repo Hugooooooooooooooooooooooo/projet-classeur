@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Portfolio SIN</title>
+  <title>📁Portfolio SIN📁</title>
   <link rel="stylesheet" href="src/style.css">
   <style>
     #viewer {
@@ -15,44 +15,54 @@
       justify-content: center;
       overflow: auto;
     }
-
     .links-list a {
       cursor: pointer;
       color: rgb(5, 5, 240);
       text-decoration: underline;
+      display: block;
+      margin-bottom: 5px;
     }
-
-    .upload-section {
-      margin-top: 20px;
+    .category {
+      display: none;
+    }
+    .btn-toggle {
+      margin: 10px 5px;
+      padding: 5px 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Mon Portfolio</h1>
+      <h1>📁Mon Portfolio📁</h1>
       <p>Voici mon classeur virtuel.</p>
     </header>
 
     <main>
-      <ul class="links-list">
+      <!-- Boutons de catégories -->
+      <div>
+        <button class="btn-toggle" onclick="toggleCategory('SIN')">💻🧠SIN🧠💻</button>
+        <button class="btn-toggle" onclick="toggleCategory('projet')">🔧🛠️projet🛠️🔧</button>
+      </div>
+
+      <!-- Liens : Catégorie SIN -->
+      <ul class="links-list category" id="SIN">
         <li><a href="docs/1.pdf" data-type="pdf">Voir le TP 1</a></li>
         <li><a href="img/image.jpg" data-type="image">Voir l'image</a></li>
         <li><a href="journal/journal de bord.html" data-type="html">Voir le journal de bord</a></li>
-        <li><a href="projet basket/" data-type="html">voir le projet</a></li>
+      </ul>
+
+      <!-- Liens : Catégorie projet -->
+      <ul class="links-list category" id="projet">
+        <li><a href="projet basket/" data-type="html">Voir le projet</a></li>
         <li><a href="readme/readme.odt" data-type="file">À lire</a></li>
         <li><a href="src/style.css" data-type="text">Mise en page</a></li>
       </ul>
 
-      <!-- Formulaire d'upload -->
-      <div class="upload-section">
-        <label for="fileInput"><strong>Ajouter un fichier local :</strong></label>
-        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.txt,.html,.css">
-      </div>
-
-      <!-- Zone d'affichage -->
+      <!-- Viewer -->
       <div id="viewer">
-        <p>Sélectionne un document dans la liste ou ajoute un fichier à afficher ici.</p>
+        <p>Sélectionne un document dans la liste pour l’afficher ici.</p>
       </div>
     </main>
 
@@ -62,65 +72,54 @@
   </div>
 
   <script>
-    const links = document.querySelectorAll('.links-list a');
     const viewer = document.getElementById('viewer');
-    const fileInput = document.getElementById('fileInput');
 
-    links.forEach(link => {
+    function getFileType(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      if (['jpg','jpeg','png','gif'].includes(ext)) return 'image';
+      if (ext === 'pdf') return 'pdf';
+      if (ext === 'html') return 'html';
+      if (['txt','css','js'].includes(ext)) return 'text';
+      return 'file';
+    }
+
+    function showFile(url, type) {
+      if (type === 'pdf') {
+        viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
+      } else if (type === 'image') {
+        viewer.innerHTML = `<img src="${url}" alt="Image" style="max-width:100%; max-height:600px;">`;
+      } else if (type === 'html') {
+        viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
+      } else if (type === 'text') {
+        fetch(url).then(res => res.text()).then(text => {
+          viewer.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
+        }).catch(() => {
+          viewer.innerHTML = `<p>Erreur lors du chargement du fichier.</p>`;
+        });
+      } else {
+        viewer.innerHTML = `<p>Impossible d’afficher ce fichier ici. <a href="${url}" target="_blank">Télécharger</a></p>`;
+      }
+    }
+
+    document.querySelectorAll('.links-list a').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
         const url = link.getAttribute('href');
-        const type = link.getAttribute('data-type');
-
-        if (type === 'pdf') {
-          viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
-        } else if (type === 'image') {
-          viewer.innerHTML = `<img src="${url}" alt="Image" style="max-width:100%; max-height:600px;">`;
-        } else if (type === 'html') {
-          viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
-        } else if (type === 'text') {
-          fetch(url)
-            .then(response => response.text())
-            .then(text => {
-              viewer.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
-            })
-            .catch(() => {
-              viewer.innerHTML = `<p>Impossible de charger le fichier.</p>`;
-            });
-        } else {
-          viewer.innerHTML = `<p>Impossible d'afficher ce fichier ici. <a href="${url}" target="_blank" rel="noopener">Clique ici pour télécharger</a></p>`;
-        }
+        const type = getFileType(url);
+        showFile(url, type);
       });
     });
 
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      if (!file) return;
+    function toggleCategory(id) {
+      document.querySelectorAll('.category').forEach(cat => {
+        cat.style.display = 'none';
+      });
+      const selected = document.getElementById(id);
+      if (selected) selected.style.display = 'block';
+    }
 
-      const reader = new FileReader();
-      const fileType = file.type;
-
-      reader.onload = function(e) {
-        const result = e.target.result;
-
-        if (fileType.startsWith("image/")) {
-          viewer.innerHTML = `<img src="${result}" alt="Image uploadée" style="max-width:100%; max-height:600px;">`;
-        } else if (fileType === "application/pdf") {
-          viewer.innerHTML = `<iframe src="${result}" width="100%" height="600px" frameborder="0"></iframe>`;
-        } else if (fileType.startsWith("text/") || file.name.endsWith('.css') || file.name.endsWith('.html')) {
-          viewer.innerHTML = `<pre style="white-space: pre-wrap;">${result}</pre>`;
-        } else {
-          viewer.innerHTML = `<p>Type de fichier non pris en charge pour l'affichage direct. Nom du fichier : ${file.name}</p>`;
-        }
-      };
-
-      // Lire selon le type
-      if (fileType.startsWith("text/") || file.name.endsWith('.css') || file.name.endsWith('.html')) {
-        reader.readAsText(file);
-      } else {
-        reader.readAsDataURL(file);
-      }
-    });
+    // Optionnel : Afficher une catégorie par défaut (ex: documents)
+    toggleCategory('documents');
   </script>
 </body>
 </html>
