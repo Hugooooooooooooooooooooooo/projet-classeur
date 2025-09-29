@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Journal de bord</title>
+  <style>
+    /* Thème sombre global */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #000022;
+      color: #fff;
+      margin: 40px auto;
+      max-width: 800px;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      color: #1abc9c;
+      border-bottom: 3px solid #3498db;
+      display: inline-block;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+    }
+
+    form {
+      background-color: #111133;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #1c1c3c;
+      color: #fff;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      margin-top: 10px;
+      color: #ccc;
+    }
+
+    button[type="submit"] {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #1abc9c;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #16a085;
+    }
+
+    .entry {
+      background-color: #1c1c3c;
+      border-left: 5px solid #3498db;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 255, 255, 0.05);
+    }
+
+    .entry p {
+      color: #ccc;
+      margin: 10px 0;
+    }
+
+    .entry small {
+      color: #888;
+      display: block;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    .entry img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-size: 0.9em;
+      cursor: pointer;
+      float: right;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Journal de Bord</h1>
+
+  <!-- Formulaire pour ajouter une entrée -->
+  <form id="entryForm">
+    <textarea id="note" placeholder="Ecris ta note ici..." rows="4"></textarea><br>
+    <input type="file" id="photoInput" accept="image/*"><br>
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <!-- Affichage des entrées -->
+  <div id="entries"></div>
+
+  <script>
+    const entryForm = document.getElementById("entryForm");
+    const noteInput = document.getElementById("note");
+    const photoInput = document.getElementById("photoInput");
+    const entries = document.getElementById("entries");
+
+    let savedEntries = JSON.parse(localStorage.getItem("journal")) || [];
+
+    function renderEntries() {
+      entries.innerHTML = "";
+
+      savedEntries.forEach((entry, index) => {
+        const div = document.createElement("div");
+        div.className = "entry";
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Supprimer";
+        delBtn.className = "delete-btn";
+        delBtn.onclick = () => {
+          savedEntries.splice(index, 1);
+          localStorage.setItem("journal", JSON.stringify(savedEntries));
+          renderEntries();
+        };
+        div.appendChild(delBtn);
+
+        if (entry.note) {
+          const p = document.createElement("p");
+          p.textContent = entry.note;
+          div.appendChild(p);
+        }
+
+        if (entry.photo) {
+          const img = document.createElement("img");
+          img.src = entry.photo;
+          img.alt = "Photo du journal";
+          div.appendChild(img);
+        }
+
+        const small = document.createElement("small");
+        small.textContent = "Ajouté le " + entry.date;
+        div.appendChild(small);
+
+        entries.appendChild(div);
+      });
+    }
+
+    entryForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const note = noteInput.value.trim();
+      const file = photoInput.files[0];
+
+      if (!note && !file) return;
+
+      let photoDataUrl = null;
+      if (file) {
+        photoDataUrl = await toBase64(file);
+      }
+
+      const newEntry = {
+        note: note || "",
+        photo: photoDataUrl,
+        date: new Date().toLocaleString()
+      };
+
+      savedEntries.push(newEntry);
+      localStorage.setItem("journal", JSON.stringify(savedEntries));
+      renderEntries();
+
+      entryForm.reset();
+    });
+
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    }
+
+    renderEntries();
+  </script>
+</body>
+</html>

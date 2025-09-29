@@ -1,0 +1,295 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>📁Portfolio SIN📁</title>
+  <link rel="stylesheet" href="src/style.css">
+  <style>
+    /* --- Ton CSS existant --- */
+    #viewer { width: 100%; height: 600px; border: 1px solid #f80202; margin-top: 20px;
+      display: flex; align-items: center; justify-content: center; overflow: auto; flex-direction: column;
+      background-color: #000022; color: white; padding: 15px; }
+    .links-list a { display: block; background-color: #1c1c3c; color: #1abc9c; text-decoration: none;
+      padding: 12px 16px; border-radius: 6px; margin-bottom: 10px; font-size: 1.1em;
+      transition: background-color 0.3s, transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); cursor: pointer; }
+    .links-list a:hover { background-color: #3498db; color: #fff; transform: translateY(-2px); text-decoration: none; }
+    .category { display: none; }
+    .btn-toggle { margin: 10px 5px; padding: 5px 10px; cursor: pointer; }
+    form { background-color: #111133; padding: 20px; border-radius: 8px; margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); width: 100%; max-width: 700px; }
+    textarea { width: 100%; padding: 10px; font-size: 1em; border: none; border-radius: 5px;
+      background-color: #1c1c3c; color: #fff; resize: vertical; }
+    input[type="file"] { margin-top: 10px; color: #ccc; }
+    button[type="submit"] { margin-top: 15px; padding: 10px 20px; background-color: #1abc9c; border: none;
+      color: #000; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+    button[type="submit"]:hover { background-color: #16a085; }
+    .entry { background-color: #1c1c3c; border-left: 5px solid #3498db; padding: 15px; margin-bottom: 20px;
+      border-radius: 8px; box-shadow: 0 0 5px rgba(0, 255, 255, 0.05); max-width: 700px; width: 100%; position: relative; }
+    .entry p { color: #ccc; margin: 10px 0; white-space: pre-wrap; }
+    .entry small { color: #888; display: block; margin-top: 10px; font-size: 0.9em; }
+    .entry img { max-width: 100%; height: auto; margin-top: 10px; border-radius: 5px; }
+    .delete-btn { background-color: #e74c3c; color: white; border: none; padding: 5px 10px;
+      border-radius: 3px; font-size: 0.9em; cursor: pointer; position: absolute; top: 10px; right: 10px; }
+    .delete-btn:hover { background-color: #c0392b; }
+    #passwordModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    #passwordModal .modal-content { background-color: #1c1c3c; padding: 20px; border-radius: 10px;
+      box-shadow: 0 0 10px #00ffff; width: 300px; }
+    #passwordModal h3 { color: white; margin-top: 0; }
+    #passwordModal input[type="password"] { width: 100%; padding: 10px; border: none; border-radius: 5px;
+      margin-bottom: 10px; background-color: #2c2c4c; color: #fff; }
+    #passwordModal button { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    #passwordModal .validate-btn { background-color: #1abc9c; color: black; }
+    #passwordModal .cancel-btn { background-color: #e74c3c; color: white; margin-left: 5px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>📁Mon Portfolio📁</h1>
+      <p>Voici mon classeur virtuel.</p>
+    </header>
+
+    <main>
+      <div>
+        <button class="btn-toggle" onclick="toggleCategory('SIN')">💻🧠SIN🧠💻</button>
+        <button class="btn-toggle" onclick="toggleCategory('projet')">🔧🛠️projet🛠️🔧</button>
+        <button class="btn-toggle" onclick="askPasswordAndToggleAdmin()">🔒Admin🔒</button>
+      </div>
+
+      <div class="category" id="SIN">
+        <ul class="links-list">
+          <li><a href="docs/1.pdf" data-type="pdf">Exemple de codage</a></li>
+          <li><a href="img/image.jpg" data-type="image">Exemple de diagrammes</a></li>
+        </ul>
+        <div class="journal-section" data-category="SIN"></div>
+      </div>
+
+      <div class="category" id="projet">
+        <ul class="links-list">
+          <li><a href="projet basket/" data-type="html">Projet basket</a></li>
+          <li><a href="readme/readme.odt" data-type="file">Projet site</a></li>
+          <li><a href="src/style.css" data-type="text">Projet perso de jeux</a></li>
+        </ul>
+        <div class="journal-section" data-category="projet"></div>
+      </div>
+
+      <div class="category" id="admin">
+        <h2>Journal de bord - Admin</h2>
+        <div class="journal-section" data-category="admin"></div>
+      </div>
+
+      <div id="viewer">
+        <p>Sélectionne un document dans la liste pour l’afficher ici.</p>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2025 Mon Portfolio SIN</p>
+    </footer>
+  </div>
+
+  <!-- 🔐 Modal mot de passe -->
+  <div id="passwordModal">
+    <div class="modal-content">
+      <h3>🔒 Confirmation</h3>
+      <input type="password" id="adminPassword" placeholder="Mot de passe">
+      <div style="text-align:right;">
+        <button class="validate-btn">Valider</button>
+        <button class="cancel-btn" onclick="closePasswordModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+    function getFileType(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      if (['jpg','jpeg','png','gif'].includes(ext)) return 'image';
+      if (ext === 'pdf') return 'pdf';
+      if (ext === 'html') return 'html';
+      if (['txt','css','js'].includes(ext)) return 'text';
+      return 'file';
+    }
+    function showFile(url, type) {
+      if (type === 'pdf' || type === 'html') {
+        viewer.innerHTML = `<iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>`;
+      } else if (type === 'image') {
+        viewer.innerHTML = `<img src="${url}" alt="Image" style="max-width:100%; max-height:600px;">`;
+      } else if (type === 'text') {
+        fetch(url).then(res => res.text()).then(text => {
+          viewer.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
+        }).catch(() => viewer.innerHTML = `<p>Erreur lors du chargement.</p>`);
+      } else {
+        viewer.innerHTML = `<p>Impossible d’afficher. <a href="${url}" target="_blank">Télécharger</a></p>`;
+      }
+    }
+    document.querySelectorAll('.links-list a').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const url = link.getAttribute('href');
+        const type = getFileType(url);
+        showFile(url, type);
+      });
+    });
+    function toggleCategory(id) {
+      document.querySelectorAll('.category').forEach(cat => cat.style.display = 'none');
+      const selected = document.getElementById(id);
+      if (selected) selected.style.display = 'block';
+      viewer.innerHTML = '<p>Sélectionne un document dans la liste pour l’afficher ici.</p>';
+      renderJournalEntries(id);
+    }
+
+    // 🔐 Modal Admin
+    function askPasswordAndToggleAdmin() {
+      document.getElementById("passwordModal").style.display = "flex";
+      document.querySelector("#passwordModal .validate-btn").onclick = checkPassword;
+    }
+    function closePasswordModal() {
+      document.getElementById("passwordModal").style.display = "none";
+      document.getElementById("adminPassword").value = "";
+    }
+    function checkPassword() {
+      const entered = document.getElementById("adminPassword").value;
+      if (entered === "Phoenix.2845") {
+        closePasswordModal();
+        toggleCategory('admin');
+      } else {
+        alert("Mot de passe incorrect !");
+        document.getElementById("adminPassword").value = "";
+      }
+    }
+
+    // --- Journal ---
+    const allCategories = ['SIN','projet','admin'];
+    let savedEntries = JSON.parse(localStorage.getItem('journal_allEntries')) || [];
+    if (!Array.isArray(savedEntries)) savedEntries = [];
+
+    function renderJournalEntries(category) {
+      const journalDiv = document.querySelector(`.journal-section[data-category="${category}"]`);
+      if (!journalDiv) return;
+      journalDiv.querySelectorAll('.entries').forEach(e => e.remove());
+      const entriesDiv = document.createElement('div');
+      entriesDiv.className = 'entries';
+      journalDiv.appendChild(entriesDiv);
+
+      savedEntries.forEach((entry, index) => {
+        if (entry.categories.includes(category)) {
+          const div = document.createElement('div');
+          div.className = 'entry';
+
+          // 🔴 Bouton supprimer partout
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Supprimer';
+          delBtn.className = 'delete-btn';
+          delBtn.onclick = () => askDeleteWithPassword(index);
+          div.appendChild(delBtn);
+
+          if (entry.note) {
+            const p = document.createElement('p');
+            p.textContent = entry.note;
+            div.appendChild(p);
+          }
+          if (entry.photo) {
+            const img = document.createElement('img');
+            img.src = entry.photo;
+            div.appendChild(img);
+          }
+          const small = document.createElement('small');
+          small.textContent = "Ajouté le " + entry.date + "\nDans: " + entry.categories.join(', ');
+          div.appendChild(small);
+
+          entriesDiv.appendChild(div);
+        }
+      });
+    }
+
+    // Formulaire Admin
+    const adminJournal = document.querySelector('.journal-section[data-category="admin"]');
+    if (adminJournal) {
+      const form = document.createElement('form');
+      form.id = 'entryForm-admin';
+      const textarea = document.createElement('textarea');
+      textarea.placeholder = "Écris ta note ici...";
+      textarea.rows = 4;
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file'; fileInput.accept = 'image/*';
+      const categoriesDiv = document.createElement('div');
+      const catTitle = document.createElement('p');
+      catTitle.textContent = "Afficher cette note dans:";
+      catTitle.style.color = "#1abc9c";
+      categoriesDiv.appendChild(catTitle);
+      allCategories.forEach(cat => {
+        const label = document.createElement('label');
+        label.style.marginRight = '10px';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.value = cat; cb.name = 'categories';
+        if (cat === 'admin') cb.checked = true;
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + cat));
+        categoriesDiv.appendChild(label);
+      });
+      const submitBtn = document.createElement('button');
+      submitBtn.type = 'submit'; submitBtn.textContent = 'Ajouter';
+      form.appendChild(textarea);
+      form.appendChild(fileInput);
+      form.appendChild(categoriesDiv);
+      form.appendChild(submitBtn);
+      adminJournal.appendChild(form);
+
+      function toBase64(file) {
+        return new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.readAsDataURL(file);
+          r.onload = () => resolve(r.result);
+          r.onerror = err => reject(err);
+        });
+      }
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const note = textarea.value.trim();
+        const file = fileInput.files[0];
+        const selectedCategories = [...form.querySelectorAll('input[name="categories"]:checked')].map(cb => cb.value);
+        if (!note && !file) return alert("Veuillez écrire une note ou ajouter une photo.");
+        if (selectedCategories.length === 0) return alert("Veuillez cocher au moins une catégorie.");
+        let photoDataUrl = null;
+        if (file) photoDataUrl = await toBase64(file);
+        const newEntry = {
+          note: note || "",
+          photo: photoDataUrl,
+          categories: selectedCategories,
+          date: new Date().toLocaleString()
+        };
+        savedEntries.push(newEntry);
+        localStorage.setItem('journal_allEntries', JSON.stringify(savedEntries));
+        textarea.value = ""; fileInput.value = "";
+        form.querySelectorAll('input[name="categories"]').forEach(cb => cb.checked = false);
+        form.querySelector('input[name="categories"][value="admin"]').checked = true;
+        allCategories.forEach(cat => renderJournalEntries(cat));
+      });
+    }
+
+    // 🔐 Suppression protégée
+    function askDeleteWithPassword(index) {
+      document.getElementById("passwordModal").style.display = "flex";
+      document.querySelector("#passwordModal .validate-btn").onclick = function() {
+        const entered = document.getElementById("adminPassword").value;
+        if (entered === "Phoenix.2845") {
+          savedEntries.splice(index, 1);
+          localStorage.setItem('journal_allEntries', JSON.stringify(savedEntries));
+          allCategories.forEach(cat => renderJournalEntries(cat));
+          closePasswordModal();
+        } else {
+          alert("Mot de passe incorrect !");
+          document.getElementById("adminPassword").value = "";
+        }
+      };
+    }
+
+    // Chargement initial
+    allCategories.forEach(cat => renderJournalEntries(cat));
+  </script>
+</body>
+</html>
